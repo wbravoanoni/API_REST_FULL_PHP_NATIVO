@@ -18,8 +18,24 @@ class Conexion{
         return $response;
     }
 
+    public function get_all_limit($tabla,$data){
+        $desde    = $data['desde'];
+        $cantidad = $data['cantidad'];
+        $stmt = Conexion::conectar()->prepare("SELECT * FROM {$tabla} LIMIT {$desde},{$cantidad};");
+        $stmt->execute();
+        $response = $stmt->fetchAll(PDO::FETCH_CLASS);
+        return $response;
+    }
+
     public function campo_repetido($campo,$valor,$tabla){
         $stmt = Conexion::conectar()->prepare("SELECT 1 FROM {$tabla} where {$campo} = '{$valor}' ");
+        $stmt->execute();
+        
+        return $stmt->rowCount() > 0 ? true: false;
+    }
+
+    public function campo_repetido_no_id_actual($campo,$valor,$id,$tabla){
+        $stmt = Conexion::conectar()->prepare("SELECT 1 FROM {$tabla} where {$campo} = '{$valor}' and id <> {$id}");
         $stmt->execute();
         
         return $stmt->rowCount() > 0 ? true: false;
